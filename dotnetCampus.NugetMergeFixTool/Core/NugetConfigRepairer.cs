@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using NugetMergeFixTool.Utils;
+using dotnetCampus.NugetMergeFixTool.Core.NugetConfigFixHelper;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core
 {
     public class NugetConfigRepairer
     {
@@ -17,7 +15,8 @@ namespace NugetMergeFixTool.Core
         /// 构造一个 Nuget 配置文件修复器
         /// </summary>
         /// <param name="configPath">Nuget 配置文件路径</param>
-        public NugetConfigRepairer([NotNull] string configPath, [NotNull] IEnumerable<NugetFixStrategy> nugetFixStrategies)
+        public NugetConfigRepairer([NotNull] string configPath,
+            [NotNull] IEnumerable<NugetFixStrategy> nugetFixStrategies)
         {
             _nugetFixStrategies = nugetFixStrategies ?? throw new ArgumentNullException(nameof(nugetFixStrategies));
             _xDocument = new XmlReader(configPath).Document;

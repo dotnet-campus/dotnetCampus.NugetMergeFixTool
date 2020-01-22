@@ -1,12 +1,10 @@
-﻿using NugetMergeFixTool.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core.NugetConfigParser
 {
     /// <summary>
     /// Nuget 解析器
@@ -31,7 +29,10 @@ namespace NugetMergeFixTool.Core
         public bool IsGoodFormat()
         {
             if (_isGoodFormat.HasValue)
+            {
                 return _isGoodFormat.Value;
+            }
+
             _isGoodFormat = false;
             var root = _xDocument.Root;
             if (root.Name.LocalName != PackagesConfig.RootName)
@@ -39,6 +40,7 @@ namespace NugetMergeFixTool.Core
                 ExceptionMessage = $"packages.config 根节点名称不为 ${PackagesConfig.RootName}";
                 return false;
             }
+
             var xElements = root.Elements();
             for (var i = 0; i < xElements.Count(); i++)
             {
@@ -48,6 +50,7 @@ namespace NugetMergeFixTool.Core
                     ExceptionMessage = $"第 {i} 个节点异常：{element.Name} 不是合法的 packages.config 子节点。";
                     return false;
                 }
+
                 if (!CheckElementAttribute(element, PackagesConfig.IdAttribute, out var errorMessage)
                     || !CheckElementAttribute(element, PackagesConfig.VersionAttribute, out errorMessage)
                     || !CheckElementAttribute(element, PackagesConfig.TargetFrameworkAttribute, out errorMessage))
@@ -56,6 +59,7 @@ namespace NugetMergeFixTool.Core
                     return false;
                 }
             }
+
             _isGoodFormat = true;
             return true;
         }
@@ -67,7 +71,10 @@ namespace NugetMergeFixTool.Core
         public IEnumerable<NugetInfo> GetNugetInfos()
         {
             if (!IsGoodFormat())
+            {
                 throw new InvalidOperationException("无法在格式异常的配置文件中读取 Nuget 信息。");
+            }
+
             var nugetInfoList = new List<NugetInfo>();
             var root = _xDocument.Root;
             var xElements = root.Elements();
@@ -79,6 +86,7 @@ namespace NugetMergeFixTool.Core
                     element.Attribute(PackagesConfig.TargetFrameworkAttribute).Value);
                 nugetInfoList.Add(packageInfo);
             }
+
             return nugetInfoList;
         }
 
@@ -90,6 +98,7 @@ namespace NugetMergeFixTool.Core
                 errorMessage = $"缺少 {PackagesConfig.TargetFrameworkAttribute} 属性。";
                 return false;
             }
+
             return true;
         }
 

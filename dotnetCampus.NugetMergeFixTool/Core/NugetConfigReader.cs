@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using NugetMergeFixTool.Utils;
+using dotnetCampus.NugetMergeFixTool.Core.NugetConfigParser;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core
 {
     /// <summary>
     /// Nuget 读取器
@@ -19,9 +18,8 @@ namespace NugetMergeFixTool.Core
         /// 构造一个 Nuget 配置文件读取器
         /// </summary>
         /// <param name="filePath">Nuget 配置文件路径</param>
-        public NugetConfigReader([NotNull]string filePath) : base(filePath)
+        public NugetConfigReader([NotNull] string filePath) : base(filePath)
         {
-
         }
 
         #endregion
@@ -35,6 +33,12 @@ namespace NugetMergeFixTool.Core
 
         #endregion
 
+        #region 私有变量
+
+        private INugetConfigParser _nugetConfigParser;
+
+        #endregion
+
         #region 内部方法
 
         /// <summary>
@@ -44,7 +48,10 @@ namespace NugetMergeFixTool.Core
         protected override bool CheckFormat()
         {
             if (!base.CheckFormat())
+            {
                 return false;
+            }
+
             switch (NugetConfig.GetNugetConfigType(FilePath))
             {
                 case NugetConfigType.PackagesConfig:
@@ -59,11 +66,13 @@ namespace NugetMergeFixTool.Core
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             if (!_nugetConfigParser.IsGoodFormat())
             {
                 ErrorMessage = CreateFormatErrorMessage(_nugetConfigParser.ExceptionMessage);
                 return false;
             }
+
             return true;
         }
 
@@ -81,12 +90,6 @@ namespace NugetMergeFixTool.Core
         {
             return $"{FilePath}{Environment.NewLine}  {errorMessage}";
         }
-
-        #endregion
-
-        #region 私有变量
-
-        private INugetConfigParser _nugetConfigParser;
 
         #endregion
     }

@@ -1,30 +1,10 @@
-﻿namespace NugetMergeFixTool.Core
+﻿namespace dotnetCampus.NugetMergeFixTool.Core
 {
     /// <summary>
     /// Nuget 包信息类
     /// </summary>
     public class NugetInfo
     {
-        /// <summary>
-        /// Nuget 名称
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Nuget 版本号
-        /// </summary>
-        public string Version { get; }
-
-        /// <summary>
-        /// Nuget 目标框架
-        /// </summary>
-        public string TargetFramework { get; }
-
-        /// <summary>
-        /// Dll 信息
-        /// </summary>
-        public NugetDllInfo NugetDllInfo { get; }
-
         /// <summary>
         /// 构造一条 Nuget 包信息
         /// </summary>
@@ -53,5 +33,25 @@
         {
             NugetDllInfo = nugetInfo.NugetDllInfo;
         }
+
+        /// <summary>
+        /// Nuget 名称
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// Nuget 版本号
+        /// </summary>
+        public string Version { get; }
+
+        /// <summary>
+        /// Nuget 目标框架
+        /// </summary>
+        public string TargetFramework { get; }
+
+        /// <summary>
+        /// Dll 信息
+        /// </summary>
+        public NugetDllInfo NugetDllInfo { get; }
     }
 }

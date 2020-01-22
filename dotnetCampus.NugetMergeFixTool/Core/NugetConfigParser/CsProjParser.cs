@@ -1,12 +1,11 @@
-﻿using NugetMergeFixTool.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Linq;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core.NugetConfigParser
 {
     /// <summary>
     /// Nuget 解析器
@@ -32,7 +31,10 @@ namespace NugetMergeFixTool.Core
         public bool IsGoodFormat()
         {
             if (_isGoodFormat.HasValue)
+            {
                 return _isGoodFormat.Value;
+            }
+
             _isGoodFormat = false;
             var root = _xDocument.Root;
             if (root.Name.LocalName != CsProj.RootName)
@@ -40,20 +42,25 @@ namespace NugetMergeFixTool.Core
                 ExceptionMessage = $".csproj 文件根节点名称不为 ${CsProj.RootName}";
                 return false;
             }
+
             foreach (var packageReference in CsProj.GetPackageReferences(_xDocument))
             {
-                if (packageReference.Attribute(CsProj.IncludeAttribute) == null && packageReference.Attribute(CsProj.UpdateAttribute) == null)
+                if (packageReference.Attribute(CsProj.IncludeAttribute) == null &&
+                    packageReference.Attribute(CsProj.UpdateAttribute) == null)
                 {
                     ExceptionMessage = $"{CsProj.PackageReferenceName} 缺少 {CsProj.IncludeAttribute} 属性。";
                     return false;
                 }
+
                 if (packageReference.Attribute(CsProj.VersionAttribute) == null
-                    && packageReference.Elements().FirstOrDefault(x => x.Name.LocalName == CsProj.VersionElementName) == null)
+                    && packageReference.Elements().FirstOrDefault(x => x.Name.LocalName == CsProj.VersionElementName) ==
+                    null)
                 {
                     ExceptionMessage = $"{CsProj.PackageReferenceName} 缺少必要的版本信息。";
                     return false;
                 }
             }
+
             _isGoodFormat = true;
             return true;
         }
@@ -65,7 +72,10 @@ namespace NugetMergeFixTool.Core
         public IEnumerable<NugetInfo> GetNugetInfos()
         {
             if (!IsGoodFormat())
+            {
                 throw new InvalidOperationException("无法在格式异常的配置文件中读取 Nuget 信息。");
+            }
+
             var nugetInfoList = new List<NugetInfo>();
             var packageReferences = CsProj.GetPackageReferences(_xDocument);
             foreach (var packageReference in packageReferences)
@@ -73,14 +83,19 @@ namespace NugetMergeFixTool.Core
                 var nugetName = GetNugetName(packageReference);
                 var nugetVersion = GetNugetVersion(packageReference);
                 if (string.IsNullOrWhiteSpace(nugetName) || string.IsNullOrWhiteSpace(nugetVersion))
+                {
                     continue;
+                }
+
                 nugetInfoList.Add(new NugetInfo(nugetName, nugetVersion));
             }
+
             foreach (var nugetInfoReference in CsProj.GetNugetInfoReferences(_xDocument))
             {
                 var nugetInfo = CsProj.GetNugetInfoFromNugetInfoReference(nugetInfoReference, _csProjPath);
                 nugetInfoList.Add(nugetInfo);
             }
+
             return nugetInfoList;
         }
 
@@ -91,11 +106,13 @@ namespace NugetMergeFixTool.Core
             {
                 return includeAttribute.Value;
             }
+
             var updateAttribute = xElement.Attribute(CsProj.UpdateAttribute);
             if (updateAttribute != null)
             {
                 return updateAttribute.Value;
             }
+
             ShowExceptionMessageBox(xElement);
             return string.Empty;
         }
@@ -107,6 +124,7 @@ namespace NugetMergeFixTool.Core
             {
                 return versionAttribute.Value;
             }
+
             var childElements = xElement.Elements();
             var firstVersionAttribute = childElements.FirstOrDefault(x => x.Name.LocalName == CsProj.VersionAttribute);
             if (firstVersionAttribute == null)
@@ -114,6 +132,7 @@ namespace NugetMergeFixTool.Core
                 ShowExceptionMessageBox(xElement);
                 return string.Empty;
             }
+
             return firstVersionAttribute.Value;
         }
 

@@ -1,33 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core.NugetConfigFixHelper
 {
     public abstract class NugetConfigFixHelperBase : INugetConfigFixHelper
     {
         #region 构造函数
 
-        protected NugetConfigFixHelperBase([NotNull] XDocument xDocument, [NotNull] IEnumerable<NugetFixStrategy> nugetFixStrategies)
+        protected NugetConfigFixHelperBase([NotNull] XDocument xDocument,
+            [NotNull] IEnumerable<NugetFixStrategy> nugetFixStrategies)
         {
             Document = xDocument;
             NugetFixStrategies = nugetFixStrategies ?? throw new ArgumentNullException(nameof(nugetFixStrategies));
         }
-
-        #endregion
-
-        #region 公共字段
-
-        public string Log { get; protected set; }
-
-        public IEnumerable<NugetFixStrategy> SucceedStrategies => _succeedNugetFixStrategyList;
-
-        public IEnumerable<NugetFixStrategy> IgnoredStrategies => _ignoredNugetFixStrategyList;
 
         #endregion
 
@@ -50,6 +37,7 @@ namespace NugetMergeFixTool.Core
                     _ignoredNugetFixStrategyList.Add(nugetFixStrategy);
                 }
             }
+
             return Document;
         }
 
@@ -63,6 +51,16 @@ namespace NugetMergeFixTool.Core
         /// <param name="nugetFixStrategy">修复策略</param>
         /// <returns>策略是否有效执行</returns>
         protected abstract bool FixDocumentByStrategy(NugetFixStrategy nugetFixStrategy);
+
+        #endregion
+
+        #region 公共字段
+
+        public string Log { get; protected set; }
+
+        public IEnumerable<NugetFixStrategy> SucceedStrategies => _succeedNugetFixStrategyList;
+
+        public IEnumerable<NugetFixStrategy> IgnoredStrategies => _ignoredNugetFixStrategyList;
 
         #endregion
 

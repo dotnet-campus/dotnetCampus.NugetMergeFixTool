@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace NugetMergeFixTool.Utils
+namespace dotnetCampus.NugetMergeFixTool.Utils
 {
     /// <summary>
     /// Nuget 配置文件助手类
@@ -21,7 +17,10 @@ namespace NugetMergeFixTool.Utils
         public static NugetConfigType GetNugetConfigType([NotNull] string configPath)
         {
             if (configPath == null)
+            {
                 throw new ArgumentNullException(nameof(configPath));
+            }
+
             switch (Path.GetExtension(configPath))
             {
                 case ".config":

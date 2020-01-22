@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using dotnetCampus.Configurations;
 using dotnetCampus.Configurations.Core;
-using NugetMergeFixTool.Core;
-using NugetMergeFixTool.UI;
-using NugetMergeFixTool.Utils;
+using dotnetCampus.NugetMergeFixTool.Core;
+using dotnetCampus.NugetMergeFixTool.UI;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
 namespace dotnetCampus.NugetMergeFixTool
 {
@@ -31,7 +19,7 @@ namespace dotnetCampus.NugetMergeFixTool
         public MainWindow()
         {
             InitializeComponent();
-            
+
             _configs = ConfigurationFactory.FromFile("Configs.fkv").CreateAppConfigurator().Of<DefaultConfiguration>();
             Loaded += (sender, args) =>
             {
@@ -39,6 +27,10 @@ namespace dotnetCampus.NugetMergeFixTool
                 TextBoxDirectory.Text = _configs["SoluctionFile"];
             };
         }
+
+        private readonly DefaultConfiguration _configs;
+
+        private NugetVersionChecker _nugetVersionChecker;
 
         private void Check()
         {
@@ -51,17 +43,20 @@ namespace dotnetCampus.NugetMergeFixTool
                 MessageBox.Show("源代码路径不能为空…… 心急吃不了热豆腐……");
                 return;
             }
+
             if (!File.Exists(solutionFile))
             {
                 MessageBox.Show("找不到指定的解决方案，这是啥情况？？？");
                 return;
             }
+
             _configs["IdePath"] = idePath;
             _configs["SoluctionFile"] = solutionFile;
             _nugetVersionChecker = new NugetVersionChecker(solutionFile);
             TextBoxErrorMessage.Text = _nugetVersionChecker.Message;
             ButtonFixFormat.IsEnabled = _nugetVersionChecker.ErrorFormatNugetConfigs.Any();
-            ButtonFixVersion.IsEnabled = _nugetVersionChecker.MismatchVersionNugetInfoExs.Any() && !_nugetVersionChecker.ErrorFormatNugetConfigs.Any();
+            ButtonFixVersion.IsEnabled = _nugetVersionChecker.MismatchVersionNugetInfoExs.Any() &&
+                                         !_nugetVersionChecker.ErrorFormatNugetConfigs.Any();
         }
 
         private void ButtonCheck_OnClick(object sender, RoutedEventArgs e)
@@ -77,17 +72,19 @@ namespace dotnetCampus.NugetMergeFixTool
                 MessageBox.Show("大佬，IDE 路径都还没配置，你这样我很难帮你办事啊……");
                 return;
             }
+
             if (!File.Exists(idePath))
             {
                 MessageBox.Show("找不到配置的 IDE，可能离家出走了吧……");
                 return;
             }
+
             OpenFilesByIde(idePath, _nugetVersionChecker.ErrorFormatNugetConfigs.Select(x => x.FilePath).Distinct());
         }
 
         private void OpenFilesByIde(string idePath, IEnumerable<string> filePaths)
         {
-            var process = new Process()
+            var process = new Process
             {
                 StartInfo = new ProcessStartInfo("cmd.exe")
                 {
@@ -122,7 +119,10 @@ namespace dotnetCampus.NugetMergeFixTool
             {
                 var nugetFixStrategies = args.NugetFixStrategies;
                 if (nugetFixStrategies == null || !nugetFixStrategies.Any())
+                {
                     return;
+                }
+
                 var repairLog = string.Empty;
                 foreach (var mismatchVersionNugetInfoEx in _nugetVersionChecker.MismatchVersionNugetInfoExs)
                 {
@@ -133,15 +133,12 @@ namespace dotnetCampus.NugetMergeFixTool
                         repairLog = StringSplicer.SpliceWithDoubleNewLine(repairLog, nugetConfigRepairer.Log);
                     }
                 }
+
                 TextBoxErrorMessage.Text = repairLog;
                 ButtonFixVersion.IsEnabled = false;
                 nugetVersionFixWindow.Close();
             };
             nugetVersionFixWindow.ShowDialog();
         }
-
-        private NugetVersionChecker _nugetVersionChecker;
-
-        private readonly DefaultConfiguration _configs;
     }
 }

@@ -8,56 +8,60 @@
         Title="修复工具" Height="500" Width="900">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}">
-            <Setter Property="Margin" Value="5 0"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5 0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style TargetType="{x:Type TextBox}">
-            <Setter Property="Margin" Value="5 0"/>
-            <Setter Property="Padding" Value="4"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="AcceptsReturn" Value="False"/>
-            <Setter Property="AcceptsTab" Value="False"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5 0" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="AcceptsReturn" Value="False" />
+            <Setter Property="AcceptsTab" Value="False" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
-        <Style TargetType="{x:Type Button}" >
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="MinWidth" Value="100"/>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="MinWidth" Value="100" />
         </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Margin="10 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="文本编辑器：" VerticalAlignment="Center"/>
-            <TextBox Name="TextBoxIdePath" Grid.Column="1" Height="{Binding ActualHeight, ElementName=TextBoxDirectory}"/>
+            <TextBlock Grid.Column="0" Text="文本编辑器：" VerticalAlignment="Center" />
+            <TextBox Name="TextBoxIdePath" Grid.Column="1"
+                     Height="{Binding ActualHeight, ElementName=TextBoxDirectory}" />
         </Grid>
         <Grid Grid.Row="1" Margin="10 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="解决方案路径：" VerticalAlignment="Center"/>
-            <TextBox Name="TextBoxDirectory" Grid.Column="1" Margin="5 0"/>
-            <Button Name="ButtonCheck" Grid.Column="2" Margin="5" Content="开始检测" Click="ButtonCheck_OnClick"/>
-            <Button Name="ButtonFixFormat" Grid.Column="3" Margin="5" Content="修复格式错误" IsEnabled="False" Click="ButtonFixFormat_OnClick"/>
-            <Button Name="ButtonFixVersion" Grid.Column="4" Margin="5" Content="修复版本冲突" IsEnabled="False" Click="ButtonFix_OnClick"/>
+            <TextBlock Grid.Column="0" Text="解决方案路径：" VerticalAlignment="Center" />
+            <TextBox Name="TextBoxDirectory" Grid.Column="1" Margin="5 0" />
+            <Button Name="ButtonCheck" Grid.Column="2" Margin="5" Content="开始检测" Click="ButtonCheck_OnClick" />
+            <Button Name="ButtonFixFormat" Grid.Column="3" Margin="5" Content="修复格式错误" IsEnabled="False"
+                    Click="ButtonFixFormat_OnClick" />
+            <Button Name="ButtonFixVersion" Grid.Column="4" Margin="5" Content="修复版本冲突" IsEnabled="False"
+                    Click="ButtonFix_OnClick" />
         </Grid>
-        <TextBox Name="TextBoxErrorMessage" Grid.Row="2" Margin="10 5" IsReadOnly="True" AcceptsReturn="True" AcceptsTab="True" VerticalContentAlignment="Top"
+        <TextBox Name="TextBoxErrorMessage" Grid.Row="2" Margin="10 5" IsReadOnly="True" AcceptsReturn="True"
+                 AcceptsTab="True" VerticalContentAlignment="Top"
                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </Window>

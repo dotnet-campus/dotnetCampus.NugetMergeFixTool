@@ -3,9 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
-using NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core
 {
     /// <summary>
     /// XML 读取器
@@ -18,15 +17,27 @@ namespace NugetMergeFixTool.Core
         /// 构造一个 XML 读取器
         /// </summary>
         /// <param name="filePath">XML 文件路径</param>
-        public XmlReader([NotNull]string filePath)
+        public XmlReader([NotNull] string filePath)
         {
             if (filePath == null)
+            {
                 throw new ArgumentNullException(nameof(filePath));
+            }
+
             if (!File.Exists(filePath))
+            {
                 throw new FileNotFoundException(filePath);
+            }
+
             FilePath = filePath;
             LoadXml();
         }
+
+        #endregion
+
+        #region 私有变量
+
+        protected bool? IsGoodFormatAtLastCheck;
 
         #endregion
 
@@ -65,7 +76,10 @@ namespace NugetMergeFixTool.Core
         public bool IsGoodFormat()
         {
             if (IsGoodFormatAtLastCheck.HasValue)
+            {
                 return IsGoodFormatAtLastCheck.Value;
+            }
+
             IsGoodFormatAtLastCheck = CheckFormat();
             return IsGoodFormatAtLastCheck.Value;
         }
@@ -98,7 +112,6 @@ namespace NugetMergeFixTool.Core
         /// </summary>
         protected virtual void ParseXml()
         {
-            return;
         }
 
         /// <summary>
@@ -121,12 +134,6 @@ namespace NugetMergeFixTool.Core
                 ErrorMessage = $"{FilePath} 存在格式异常：{Environment.NewLine}  {xmlException.Message}";
             }
         }
-
-        #endregion
-
-        #region 私有变量
-
-        protected bool? IsGoodFormatAtLastCheck;
 
         #endregion
     }

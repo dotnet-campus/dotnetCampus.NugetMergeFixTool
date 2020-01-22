@@ -1,25 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core
 {
     public class NugetDllInfo
     {
-        /// <summary>
-        /// Dll 绝对路径
-        /// </summary>
-        public string DllPath { get; }
-
-        /// <summary>
-        /// Dll 完整名称
-        /// </summary>
-        public string DllFullName { get; }
-
         /// <summary>
         /// 构造 Nuget Dll 信息
         /// </summary>
@@ -34,9 +21,20 @@ namespace NugetMergeFixTool.Core
             }
             else
             {
-                var dllFile = System.Reflection.Assembly.LoadFile(DllPath);
-                DllFullName = $"{dllFile.FullName.Replace(", PublicKeyToken=null", string.Empty)}, processorArchitecture=MSIL";
+                var dllFile = Assembly.LoadFile(DllPath);
+                DllFullName =
+                    $"{dllFile.FullName.Replace(", PublicKeyToken=null", string.Empty)}, processorArchitecture=MSIL";
             }
         }
+
+        /// <summary>
+        /// Dll 绝对路径
+        /// </summary>
+        public string DllPath { get; }
+
+        /// <summary>
+        /// Dll 完整名称
+        /// </summary>
+        public string DllFullName { get; }
     }
 }

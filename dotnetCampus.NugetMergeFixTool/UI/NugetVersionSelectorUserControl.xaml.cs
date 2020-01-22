@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using NugetMergeFixTool.Utils;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.UI
+namespace dotnetCampus.NugetMergeFixTool.UI
 {
     /// <summary>
     /// NugetVersionSelectorUserControl.xaml 的交互逻辑
@@ -38,7 +37,10 @@ namespace NugetMergeFixTool.UI
         private int NugetVersionDescendingComparison(string x, string y)
         {
             if (x == y)
+            {
                 return 0;
+            }
+
             var xMainVersion = GetMainVersion(x);
             var yMainVersion = GetMainVersion(y);
             var mainVersionCompareResult = -xMainVersion.CompareTo(yMainVersion);
@@ -46,6 +48,7 @@ namespace NugetMergeFixTool.UI
             {
                 return mainVersionCompareResult;
             }
+
             var xSubVersion = GetSubVersion(x);
             var ySubVersion = GetSubVersion(y);
             var subVersionCompareResult = -StringComparer.InvariantCultureIgnoreCase.Compare(xSubVersion, ySubVersion);
@@ -66,6 +69,7 @@ namespace NugetMergeFixTool.UI
                 {
                     return new Version(version);
                 }
+
                 return new Version(version.Substring(0, index));
             }
             catch (Exception)

@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:dotnetCampus.NugetMergeFixTool"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

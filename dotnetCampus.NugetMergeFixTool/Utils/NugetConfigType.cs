@@ -1,4 +1,4 @@
-﻿namespace NugetMergeFixTool.Utils
+﻿namespace dotnetCampus.NugetMergeFixTool.Utils
 {
     /// <summary>
     /// Nuget 配置文件类型

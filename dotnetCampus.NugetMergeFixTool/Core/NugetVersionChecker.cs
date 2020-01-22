@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NugetMergeFixTool.Utils;
+using dotnetCampus.NugetMergeFixTool.Utils;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core
 {
     public class NugetVersionChecker
     {
@@ -16,15 +16,27 @@ namespace NugetMergeFixTool.Core
         /// 构造一个 Nuget 版本检查器
         /// </summary>
         /// <param name="solutionFilePath">解决方案路径</param>
-        public NugetVersionChecker([NotNull]string solutionFilePath)
+        public NugetVersionChecker([NotNull] string solutionFilePath)
         {
             if (solutionFilePath == null)
+            {
                 throw new ArgumentNullException(nameof(solutionFilePath));
+            }
+
             if (!File.Exists(solutionFilePath))
+            {
                 throw new FileNotFoundException(solutionFilePath);
+            }
+
             _solutionFilePath = solutionFilePath;
             CheckNugetVersion();
         }
+
+        #endregion
+
+        #region 私有变量
+
+        private readonly string _solutionFilePath;
 
         #endregion
 
@@ -55,6 +67,7 @@ namespace NugetMergeFixTool.Core
             {
                 nugetConfigFiles.AddRange(GetNugetConfigFiles(projectDirectory));
             }
+
             var badFormatNugetConfigList = new List<NugetConfigReader>();
             var goodFormatNugetInfoExList = new List<NugetInfoEx>();
             foreach (var nugetConfigFile in nugetConfigFiles)
@@ -69,6 +82,7 @@ namespace NugetMergeFixTool.Core
                     badFormatNugetConfigList.Add(nugetConfigReader);
                 }
             }
+
             ErrorFormatNugetConfigs = badFormatNugetConfigList;
             MismatchVersionNugetInfoExs = GetMismatchVersionNugets(goodFormatNugetInfoExList);
             var nugetMismatchVersionMessage = CreateNugetMismatchVersionMessage(MismatchVersionNugetInfoExs);
@@ -76,6 +90,7 @@ namespace NugetMergeFixTool.Core
             {
                 Message = StringSplicer.SpliceWithDoubleNewLine(Message, errorFormatNugetConfig.ErrorMessage);
             }
+
             Message = StringSplicer.SpliceWithDoubleNewLine(Message, nugetMismatchVersionMessage);
             if (string.IsNullOrEmpty(Message))
             {
@@ -110,32 +125,41 @@ namespace NugetMergeFixTool.Core
         private IEnumerable<string> GetFilesFromDirectory(string directoryPath, string searchPattern = null)
         {
             if (searchPattern == null)
+            {
                 searchPattern = "*";
+            }
+
             var files = Directory.EnumerateFiles(directoryPath, searchPattern);
             foreach (var directory in Directory.GetDirectories(directoryPath))
             {
                 files = files.Concat(GetFilesFromDirectory(directory, searchPattern));
             }
+
             return files;
         }
 
-        private IEnumerable<VersionUnusualNugetInfoExGroup> GetMismatchVersionNugets([NotNull]IEnumerable<NugetInfoEx> nugetPackageInfoExs)
+        private IEnumerable<VersionUnusualNugetInfoExGroup> GetMismatchVersionNugets(
+            [NotNull] IEnumerable<NugetInfoEx> nugetPackageInfoExs)
         {
             var mismatchVersionNugetGroupList = new List<VersionUnusualNugetInfoExGroup>();
             var nugetPackageInfoGroups = nugetPackageInfoExs.GroupBy(x => x.Name);
             foreach (var nugetPackageInfoGroup in nugetPackageInfoGroups)
             {
                 var groupByConfigPath = nugetPackageInfoGroup.GroupBy(x => x.ConfigPath);
-                if (groupByConfigPath.All(x => x.Count() == 1) && nugetPackageInfoGroup.Select(x => x.Version).Distinct().Count() == 1)
+                if (groupByConfigPath.All(x => x.Count() == 1) &&
+                    nugetPackageInfoGroup.Select(x => x.Version).Distinct().Count() == 1)
                 {
                     continue;
                 }
+
                 mismatchVersionNugetGroupList.Add(new VersionUnusualNugetInfoExGroup(nugetPackageInfoGroup));
             }
+
             return mismatchVersionNugetGroupList;
         }
 
-        private string CreateNugetMismatchVersionMessage([NotNull]IEnumerable<VersionUnusualNugetInfoExGroup> mismatchVersionNugetInfoExs)
+        private string CreateNugetMismatchVersionMessage(
+            [NotNull] IEnumerable<VersionUnusualNugetInfoExGroup> mismatchVersionNugetInfoExs)
         {
             var nugetMismatchVersionMessage = string.Empty;
             foreach (var mismatchVersionNugetInfoEx in mismatchVersionNugetInfoExs)
@@ -147,9 +171,12 @@ namespace NugetMergeFixTool.Core
                     var mainDetailMessage = $"  {nugetPackageInfo.Version}，{nugetPackageInfo.ConfigPath}";
                     detailMessage = StringSplicer.SpliceWithNewLine(detailMessage, mainDetailMessage);
                 }
+
                 var singleNugetMismatchVersionMessage = StringSplicer.SpliceWithNewLine(headMessage, detailMessage);
-                nugetMismatchVersionMessage = StringSplicer.SpliceWithDoubleNewLine(nugetMismatchVersionMessage, singleNugetMismatchVersionMessage);
+                nugetMismatchVersionMessage = StringSplicer.SpliceWithDoubleNewLine(nugetMismatchVersionMessage,
+                    singleNugetMismatchVersionMessage);
             }
+
             return nugetMismatchVersionMessage;
         }
 
@@ -157,7 +184,8 @@ namespace NugetMergeFixTool.Core
         {
             var directory = Path.GetDirectoryName(Path.GetFullPath(soluctionFile));
             var text = File.ReadAllText(soluctionFile);
-            var regex = new Regex(@"Project\(""{[\w-]+}""\)\s*=\s*""[\w\.]+"",\s*""(?<csprojPath>.+\.csproj)"",\s*""{[\w-]+}""");
+            var regex = new Regex(
+                @"Project\(""{[\w-]+}""\)\s*=\s*""[\w\.]+"",\s*""(?<csprojPath>.+\.csproj)"",\s*""{[\w-]+}""");
             return FindProjectFiles();
 
             IEnumerable<string> FindProjectFiles()
@@ -171,12 +199,6 @@ namespace NugetMergeFixTool.Core
                 }
             }
         }
-
-        #endregion
-
-        #region 私有变量
-
-        private readonly string _solutionFilePath;
 
         #endregion
     }

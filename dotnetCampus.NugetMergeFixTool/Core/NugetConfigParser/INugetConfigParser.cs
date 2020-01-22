@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NugetMergeFixTool.Core
+namespace dotnetCampus.NugetMergeFixTool.Core.NugetConfigParser
 {
     /// <summary>
     /// Nuget 配置解析器接口

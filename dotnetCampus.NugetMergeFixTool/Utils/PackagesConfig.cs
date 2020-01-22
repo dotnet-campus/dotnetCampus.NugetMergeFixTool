@@ -1,4 +1,4 @@
-﻿namespace NugetMergeFixTool.Utils
+﻿namespace dotnetCampus.NugetMergeFixTool.Utils
 {
     public class PackagesConfig
     {
