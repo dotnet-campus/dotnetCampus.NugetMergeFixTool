@@ -1,0 +1,147 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using dotnetCampus.Configurations;
+using dotnetCampus.Configurations.Core;
+using NugetMergeFixTool.Core;
+using NugetMergeFixTool.UI;
+using NugetMergeFixTool.Utils;
+
+namespace dotnetCampus.NugetMergeFixTool
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+            
+            _configs = ConfigurationFactory.FromFile("Configs.fkv").CreateAppConfigurator().Of<DefaultConfiguration>();
+            Loaded += (sender, args) =>
+            {
+                TextBoxIdePath.Text = _configs["IdePath"];
+                TextBoxDirectory.Text = _configs["SoluctionFile"];
+            };
+        }
+
+        private void Check()
+        {
+            TextBoxIdePath.Text = TextBoxIdePath.Text.Trim('"');
+            TextBoxDirectory.Text = TextBoxDirectory.Text.Trim('"');
+            var idePath = TextBoxIdePath.Text;
+            var solutionFile = TextBoxDirectory.Text;
+            if (string.IsNullOrWhiteSpace(solutionFile))
+            {
+                MessageBox.Show("源代码路径不能为空…… 心急吃不了热豆腐……");
+                return;
+            }
+            if (!File.Exists(solutionFile))
+            {
+                MessageBox.Show("找不到指定的解决方案，这是啥情况？？？");
+                return;
+            }
+            _configs["IdePath"] = idePath;
+            _configs["SoluctionFile"] = solutionFile;
+            _nugetVersionChecker = new NugetVersionChecker(solutionFile);
+            TextBoxErrorMessage.Text = _nugetVersionChecker.Message;
+            ButtonFixFormat.IsEnabled = _nugetVersionChecker.ErrorFormatNugetConfigs.Any();
+            ButtonFixVersion.IsEnabled = _nugetVersionChecker.MismatchVersionNugetInfoExs.Any() && !_nugetVersionChecker.ErrorFormatNugetConfigs.Any();
+        }
+
+        private void ButtonCheck_OnClick(object sender, RoutedEventArgs e)
+        {
+            Check();
+        }
+
+        private void ButtonFixFormat_OnClick(object sender, RoutedEventArgs e)
+        {
+            var idePath = TextBoxIdePath.Text;
+            if (string.IsNullOrWhiteSpace(idePath))
+            {
+                MessageBox.Show("大佬，IDE 路径都还没配置，你这样我很难帮你办事啊……");
+                return;
+            }
+            if (!File.Exists(idePath))
+            {
+                MessageBox.Show("找不到配置的 IDE，可能离家出走了吧……");
+                return;
+            }
+            OpenFilesByIde(idePath, _nugetVersionChecker.ErrorFormatNugetConfigs.Select(x => x.FilePath).Distinct());
+        }
+
+        private void OpenFilesByIde(string idePath, IEnumerable<string> filePaths)
+        {
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo("cmd.exe")
+                {
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+            try
+            {
+                process.Start();
+                foreach (var filePath in filePaths)
+                {
+                    process.StandardInput.WriteLine($"\"{idePath}\" \"{filePath}\"");
+                }
+            }
+            finally
+            {
+                process.Close();
+            }
+        }
+
+        private void ButtonFix_OnClick(object sender, RoutedEventArgs e)
+        {
+            var nugetVersionFixWindow = new NugetVersionFixWindow(_nugetVersionChecker.MismatchVersionNugetInfoExs)
+            {
+                Owner = this
+            };
+            nugetVersionFixWindow.NugetFixStrategiesSelected += (o, args) =>
+            {
+                var nugetFixStrategies = args.NugetFixStrategies;
+                if (nugetFixStrategies == null || !nugetFixStrategies.Any())
+                    return;
+                var repairLog = string.Empty;
+                foreach (var mismatchVersionNugetInfoEx in _nugetVersionChecker.MismatchVersionNugetInfoExs)
+                {
+                    foreach (var nugetInfoEx in mismatchVersionNugetInfoEx.VersionUnusualNugetInfoExs)
+                    {
+                        var nugetConfigRepairer = new NugetConfigRepairer(nugetInfoEx.ConfigPath, nugetFixStrategies);
+                        nugetConfigRepairer.Repair();
+                        repairLog = StringSplicer.SpliceWithDoubleNewLine(repairLog, nugetConfigRepairer.Log);
+                    }
+                }
+                TextBoxErrorMessage.Text = repairLog;
+                ButtonFixVersion.IsEnabled = false;
+                nugetVersionFixWindow.Close();
+            };
+            nugetVersionFixWindow.ShowDialog();
+        }
+
+        private NugetVersionChecker _nugetVersionChecker;
+
+        private readonly DefaultConfiguration _configs;
+    }
+}
