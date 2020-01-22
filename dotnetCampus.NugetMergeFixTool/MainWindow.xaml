@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotnetCampus.NugetMergeFixTool"
         mc:Ignorable="d"
-        Title="修复工具" Height="494" Width="900">
+        Title="修复工具" Height="500" Width="900">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Margin" Value="5 0"/>
