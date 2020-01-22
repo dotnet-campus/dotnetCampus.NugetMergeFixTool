@@ -138,7 +138,7 @@ namespace dotnetCampus.NugetMergeFixTool.Core.NugetConfigParser
 
         private void ShowExceptionMessageBox(XElement xElement)
         {
-            MessageBox.Show($"发现一个无法解析的键，请保留现场，联系开发者。{Environment.NewLine}{xElement}");
+            throw new ArgumentException($"发现一个无法解析的键，请保留现场，联系开发者。{Environment.NewLine}{xElement}");
         }
 
         #region 私有变量

@@ -25,8 +25,7 @@ namespace dotnetCampus.NugetMergeFixTool.Core
                 TargetFramework, $"{nugetName}.dll");
             if (!File.Exists(dllFilePath))
             {
-                MessageBox.Show($"找不到 {dllFilePath}，无法进行修复。要不您老人家先试着编译一下，还原下 Nuget 包，然后再来看看？");
-                return;
+                throw new ArgumentException($"找不到 {dllFilePath}，无法进行修复。要不您老人家先试着编译一下，还原下 Nuget 包，然后再来看看？");
             }
 
             NugetDllInfo = new NugetDllInfo(dllFilePath, null);

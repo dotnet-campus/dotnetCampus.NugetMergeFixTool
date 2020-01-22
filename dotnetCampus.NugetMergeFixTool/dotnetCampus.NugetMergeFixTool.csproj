@@ -16,6 +16,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\dotnetCampus.NugetMergeFixTool.Core\dotnetCampus.NugetMergeFixTool.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Resource Include="Icon.ico" />
     </ItemGroup>
 
