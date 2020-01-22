@@ -5,6 +5,8 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <UseWPF>true</UseWPF>
         <ApplicationIcon>Icon.ico</ApplicationIcon>
+        <AssemblyName>NugetMergeFixTool</AssemblyName>
+        <RootNamespace>dotnetCampus.NugetMergeFixTool</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
