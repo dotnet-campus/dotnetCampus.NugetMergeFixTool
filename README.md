@@ -22,3 +22,10 @@ dotnet nugetfix
 
 暂时只支持 Windows 平台
 
+## nuget
+
+[![](https://img.shields.io/nuget/v/dotnetCampus.NuGetMergeFixTool.svg)](https://www.nuget.org/packages/dotnetCampus.NuGetMergeFixTool)
+
+[![](https://img.shields.io/nuget/v/dotnetCampus.NuGetMergeFixTool.Source.svg)](https://www.nuget.org/packages/dotnetCampus.NuGetMergeFixTool.Source)
+
+提供了 nuget 包处理底层库
