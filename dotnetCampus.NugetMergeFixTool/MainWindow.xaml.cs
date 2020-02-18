@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,12 +25,26 @@ namespace dotnetCampus.NugetMergeFixTool
             _configs = ConfigurationFactory.FromFile("Configs.fkv").CreateAppConfigurator().Of<DefaultConfiguration>();
             Loaded += (sender, args) =>
             {
-                TextBoxIdePath.Text = _configs["IdePath"];
-                TextBoxDirectory.Text = _configs["SoluctionFile"];
+                TextBoxIdePath.Text = _configs["IdePath"] ?? "";
+                SetSolutionFile();
             };
         }
 
-        private readonly DefaultConfiguration _configs;
+        private void SetSolutionFile()
+        {
+            // 当前工作路径是否包含 sln 文件
+            if (Directory.GetFiles(Environment.CurrentDirectory, "*.sln").Length > 0
+                || Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Length > 0)
+            {
+                TextBoxDirectory.Text = Environment.CurrentDirectory;
+            }
+            else
+            {
+                TextBoxDirectory.Text = _configs["SoluctionFile"] ?? "";
+            }
+        }
+
+        [NotNull] private readonly DefaultConfiguration _configs;
 
         private NugetVersionChecker _nugetVersionChecker;
 
