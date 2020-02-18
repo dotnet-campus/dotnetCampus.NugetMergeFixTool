@@ -7,6 +7,11 @@
         <ApplicationIcon>Icon.ico</ApplicationIcon>
         <AssemblyName>NugetMergeFixTool</AssemblyName>
         <RootNamespace>dotnetCampus.NugetMergeFixTool</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>dotnet-nugetfix</ToolCommandName>
+        <Version>1.0.5</Version>
     </PropertyGroup>
 
     <ItemGroup>

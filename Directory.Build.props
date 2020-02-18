@@ -12,5 +12,6 @@
     <RepositoryUrl>https://github.com/dotnet-campus/dotnetCampus.NugetMergeFixTool.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>dotnet;nuget;msbuild</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 </Project>
