@@ -33,10 +33,11 @@ namespace dotnetCampus.NugetMergeFixTool
         private void SetSolutionFile()
         {
             // 当前工作路径是否包含 sln 文件
-            if (Directory.GetFiles(Environment.CurrentDirectory, "*.sln").Length > 0
-                || Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Length > 0)
+            var slnFileList = Directory.GetFiles(Environment.CurrentDirectory, "*.sln");
+            if (slnFileList.Length > 0)
+               // || Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Length > 0)
             {
-                TextBoxDirectory.Text = Environment.CurrentDirectory;
+                TextBoxDirectory.Text = slnFileList[0];
             }
             else
             {
