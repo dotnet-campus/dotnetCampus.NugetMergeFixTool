@@ -41,16 +41,34 @@ namespace dotnetCampus.NugetMergeFixTool
         private void SetSolutionFile()
         {
             // 当前工作路径是否包含 sln 文件
-            var slnFileList = Directory.GetFiles(Environment.CurrentDirectory, "*.sln");
-            if (slnFileList.Length > 0)
-               // || Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Length > 0)
+            if (TryGetSlnFile(Environment.CurrentDirectory, out var slnFile))
             {
-                TextBoxDirectory.Text = slnFileList[0];
+                TextBoxDirectory.Text = slnFile;
             }
             else
             {
                 TextBoxDirectory.Text = _configs["SoluctionFile"] ?? "";
             }
+        }
+
+        private static bool TryGetSlnFile(string folder, out string slnFile)
+        {
+            slnFile = null;
+
+            if (!Directory.Exists(folder))
+            {
+                return false;
+            }
+
+            var slnFileList = Directory.GetFiles(folder, "*.sln");
+            if (slnFileList.Length > 0)
+            // || Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Length > 0)
+            {
+                slnFile = slnFileList[0];
+                return true;
+            }
+
+            return false;
         }
 
         [NotNull] private readonly DefaultConfiguration _configs;
@@ -62,6 +80,7 @@ namespace dotnetCampus.NugetMergeFixTool
             TextBoxIdePath.Text = TextBoxIdePath.Text.Trim('"');
             TextBoxDirectory.Text = TextBoxDirectory.Text.Trim('"');
             var idePath = TextBoxIdePath.Text;
+
             var solutionFile = TextBoxDirectory.Text;
             if (string.IsNullOrWhiteSpace(solutionFile))
             {
@@ -71,8 +90,16 @@ namespace dotnetCampus.NugetMergeFixTool
 
             if (!File.Exists(solutionFile))
             {
-                MessageBox.Show("找不到指定的解决方案，这是啥情况？？？");
-                return;
+                // 其实输入的可能是文件夹
+                if (TryGetSlnFile(solutionFile, out var slnFile))
+                {
+                    solutionFile = slnFile;
+                }
+                else
+                {
+                    MessageBox.Show("找不到指定的解决方案，这是啥情况？？？");
+                    return;
+                }
             }
 
             _configs["IdePath"] = idePath;
