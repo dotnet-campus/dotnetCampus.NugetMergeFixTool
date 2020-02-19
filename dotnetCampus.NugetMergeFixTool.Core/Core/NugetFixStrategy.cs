@@ -65,7 +65,11 @@ namespace dotnetCampus.NugetMergeFixTool.Core
             nugetName, nugetVersion)
         {
             NugetDllInfo = nugetDllInfo ?? throw new ArgumentNullException(nameof(nugetDllInfo));
-            TargetFramework = CsProj.GetTargetFrameworkOfDll(nugetDllInfo.DllPath);
+
+            if (!string.IsNullOrEmpty(nugetDllInfo.DllPath) && File.Exists(nugetDllInfo.DllPath))
+            {
+                TargetFramework = CsProj.GetTargetFrameworkOfDll(nugetDllInfo.DllPath);
+            }
         }
 
         private NugetFixStrategy(string nugetName, string nugetVersion)
