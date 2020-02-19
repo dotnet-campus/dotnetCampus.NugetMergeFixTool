@@ -14,6 +14,9 @@ namespace dotnetCampus.NugetMergeFixTool.UI
     {
         public NugetVersionFixWindow(IEnumerable<VersionUnusualNugetInfoExGroup> mismatchVersionNugetInfoExs)
         {
+            if (ReferenceEquals(mismatchVersionNugetInfoExs, null))
+                throw new ArgumentNullException(nameof(mismatchVersionNugetInfoExs));
+
             InitializeComponent();
             _mismatchVersionNugetInfoExs = mismatchVersionNugetInfoExs;
             foreach (var mismatchVersionNugetInfoEx in _mismatchVersionNugetInfoExs)
@@ -45,17 +48,23 @@ namespace dotnetCampus.NugetMergeFixTool.UI
 
                 var nugetName = nugetVersionSelectorUserControl.NugetName;
                 var selectedVersion = nugetVersionSelectorUserControl.SelectedVersion;
-                var versionUnusualNugetInfoExGroup = _mismatchVersionNugetInfoExs.First(x => x.NugetName == nugetName);
+                var versionUnusualNugetInfoExGroup = _mismatchVersionNugetInfoExs.FirstOrDefault(x => x.NugetName == nugetName);
+
+                if (versionUnusualNugetInfoExGroup == null) continue;
+
                 var selectedVersionNugetInfoExs =
-                    versionUnusualNugetInfoExGroup.VersionUnusualNugetInfoExs.Where(x => x.Version == selectedVersion);
+                    versionUnusualNugetInfoExGroup.VersionUnusualNugetInfoExs.Where(x => x.Version == selectedVersion)
+                        .ToList();
+
                 var targetFrameworks = selectedVersionNugetInfoExs.Where(x => x.TargetFramework != null)
                     .Select(x => x.TargetFramework).Distinct().ToList();
                 targetFrameworks.Sort();
                 targetFrameworks.Reverse();
                 var nugetDllInfos = selectedVersionNugetInfoExs.Where(x => x.NugetDllInfo != null)
-                    .Select(x => x.NugetDllInfo).Distinct();
-                var dllPaths = nugetDllInfos.Select(x => x.DllPath).Distinct();
-                if (dllPaths.Count() > 1)
+                    .Select(x => x.NugetDllInfo).Distinct().ToList();
+
+                var dllPaths = nugetDllInfos.Select(x => x.DllPath).Distinct().ToList();
+                if (dllPaths.Count > 1)
                 {
                     var errorMessage = "指定的修复策略存在多个 Dll 路径，修复工具无法确定应该使用哪一个。请保留现场并联系开发者。";
                     var dllPathMessage = string.Empty;
@@ -76,8 +85,17 @@ namespace dotnetCampus.NugetMergeFixTool.UI
                 }
                 else
                 {
-                    _nugetFixStrategyList.Add(
-                        new NugetFixStrategy(nugetName, selectedVersion, targetFrameworks.First()));
+                    var targetFramework = targetFrameworks.FirstOrDefault();
+                    if (targetFramework == null)
+                    {
+                        _nugetFixStrategyList.Add(
+                            new NugetFixStrategy(nugetName, selectedVersion, new NugetDllInfo("", "")));
+                    }
+                    else
+                    {
+                        _nugetFixStrategyList.Add(
+                            new NugetFixStrategy(nugetName, selectedVersion, targetFramework));
+                    }
                 }
             }
 
