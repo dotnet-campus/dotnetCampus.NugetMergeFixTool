@@ -22,12 +22,20 @@ namespace dotnetCampus.NugetMergeFixTool
         {
             InitializeComponent();
 
-            _configs = ConfigurationFactory.FromFile("Configs.fkv").CreateAppConfigurator().Of<DefaultConfiguration>();
+            _configs = ConfigurationFactory.FromFile(GetConfigFile().FullName).CreateAppConfigurator().Of<DefaultConfiguration>();
             Loaded += (sender, args) =>
             {
                 TextBoxIdePath.Text = _configs["IdePath"] ?? "";
                 SetSolutionFile();
             };
+        }
+
+        private static FileInfo GetConfigFile()
+        {
+            // 为什么不能放在应用程序运行文件夹，因为可以通过运行文件夹找到对应的 sln 如我在 C:\lindexi 运行软件，此时如果写入配置文件，那么我还需要从源代码工具去掉这个工具，或者我的代码也用了这个配置文件
+
+            // 配置文件路径是 appdata\dotnet campus\NugetMergeFixTool\Configs.fkv
+            return new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "dotnet campus", "NugetMergeFixTool", "Configs.fkv"));
         }
 
         private void SetSolutionFile()
@@ -75,6 +83,8 @@ namespace dotnetCampus.NugetMergeFixTool
             ButtonFixVersion.IsEnabled = _nugetVersionChecker.MismatchVersionNugetInfoExs.Any() &&
                                          !_nugetVersionChecker.ErrorFormatNugetConfigs.Any();
         }
+
+
 
         private void ButtonCheck_OnClick(object sender, RoutedEventArgs e)
         {
