@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using dotnetCampus.NugetMergeFixTool.Utils;
 
@@ -21,11 +22,34 @@ namespace dotnetCampus.NugetMergeFixTool.Core
         {
             TargetFramework = targetFramework;
             var userProfileFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var dllFilePath = Path.Combine(userProfileFolder, ".nuget", "packages", nugetName, nugetVersion, "lib",
-                TargetFramework, $"{nugetName}.dll");
+            var folder = Path.Combine(userProfileFolder, ".nuget", "packages", nugetName, nugetVersion, "lib",
+                TargetFramework);
+            var dllFilePath = Path.Combine(folder, $"{nugetName}.dll");
+            // 不一定使用 nuget name 命名
             if (!File.Exists(dllFilePath))
             {
-                throw new ArgumentException($"找不到 {dllFilePath}，无法进行修复。要不您老人家先试着编译一下，还原下 Nuget 包，然后再来看看？");
+                // c:\Users\lindexi\.nuget\packages\lindexi\1.7.0\lib\net45\lindexi.cc.dll
+                var dllFileList = Directory.GetFiles(folder, "*.dll");
+                if (dllFileList.Length == 0)
+                {
+                    throw new ArgumentException($"找不到 {dllFilePath}，无法进行修复。要不您老人家先试着编译一下，还原下 Nuget 包，然后再来看看？");
+                }
+                if (dllFileList.Length == 1)
+                {
+                    dllFilePath = dllFileList[0];
+                }
+                else
+                {
+                    var file = dllFileList.FirstOrDefault(temp => temp.Contains(nugetName, StringComparison.OrdinalIgnoreCase));
+                    if (file != null)
+                    {
+                        dllFilePath = file;
+                    }
+                    else
+                    {
+                        dllFilePath = dllFileList[0];
+                    }
+                }
             }
 
             NugetDllInfo = new NugetDllInfo(dllFilePath, null);
