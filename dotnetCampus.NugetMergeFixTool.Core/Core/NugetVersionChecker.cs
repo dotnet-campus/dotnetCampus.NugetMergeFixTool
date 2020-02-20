@@ -180,16 +180,17 @@ namespace dotnetCampus.NugetMergeFixTool.Core
             return nugetMismatchVersionMessage;
         }
 
-        private IEnumerable<string> GetProjectFilesFromSolutionFile(string soluctionFile)
+        private IEnumerable<string> GetProjectFilesFromSolutionFile(string solutionFile)
         {
-            var directory = Path.GetDirectoryName(Path.GetFullPath(soluctionFile));
-            var text = File.ReadAllText(soluctionFile);
-            var regex = new Regex(
-                @"Project\(""{[\w-]+}""\)\s*=\s*""[\w\.]+"",\s*""(?<csprojPath>.+\.csproj)"",\s*""{[\w-]+}""");
+            var directory = Path.GetDirectoryName(Path.GetFullPath(solutionFile));
+            var text = File.ReadAllText(solutionFile);
+            
             return FindProjectFiles();
 
             IEnumerable<string> FindProjectFiles()
             {
+                var regex = new Regex(
+                    @"Project\(""{[\w-]+}""\)\s*=\s*""[\w\.]+"",\s*""(?<csprojPath>.+\.csproj)"",\s*""{[\w-]+}""");
                 var matches = regex.Matches(text);
                 foreach (Match match in matches)
                 {
