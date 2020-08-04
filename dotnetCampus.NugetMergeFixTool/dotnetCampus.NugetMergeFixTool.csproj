@@ -11,7 +11,6 @@
 
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>dotnet-nugetfix</ToolCommandName>
-        <Version>1.0.6</Version>
     </PropertyGroup>
 
     <ItemGroup>
