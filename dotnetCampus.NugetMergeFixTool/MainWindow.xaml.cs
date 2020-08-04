@@ -192,7 +192,15 @@ namespace dotnetCampus.NugetMergeFixTool
                 ButtonFixVersion.IsEnabled = false;
                 nugetVersionFixWindow.Close();
             };
-            nugetVersionFixWindow.ShowDialog();
+
+            try
+            {
+                nugetVersionFixWindow.ShowDialog();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
     }
 }
