@@ -29,7 +29,15 @@ namespace dotnetCampus.NugetMergeFixTool.Core
             if (!File.Exists(dllFilePath))
             {
                 // c:\Users\lindexi\.nuget\packages\lindexi\1.7.0\lib\net45\lindexi.cc.dll
-                var dllFileList = Directory.GetFiles(folder, "*.dll");
+                string[] dllFileList;
+                if (!Directory.Exists(folder))
+                {
+                    dllFileList = new string[0];
+                }
+                else
+                {
+                    dllFileList = Directory.GetFiles(folder, "*.dll");
+                }
                 if (dllFileList.Length == 0)
                 {
                     throw new ArgumentException($"找不到 {dllFilePath}，无法进行修复。要不您老人家先试着编译一下，还原下 Nuget 包，然后再来看看？");
