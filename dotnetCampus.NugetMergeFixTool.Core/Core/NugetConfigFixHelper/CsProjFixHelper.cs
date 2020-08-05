@@ -30,16 +30,28 @@ namespace dotnetCampus.NugetMergeFixTool.Core.NugetConfigFixHelper
                     continue;
                 }
 
+                var removeAttributeList = new[] {"Private", "HintPath"};
+
                 var firstPackageReference = packageReferenceList[i];
                 if (firstPackageReference.Elements().Any())
                 {
-                    firstPackageReference.Elements().Remove();
+                    foreach (var attribute in removeAttributeList)
+                    {
+                        firstPackageReference.Element(attribute)?.Remove();
+                    }
+                   
                     Log = StringSplicer.SpliceWithNewLine(Log, $"    - 更新了 {nugetFixStrategy.NugetName} 的版本声明格式");
                 }
 
                 Log = StringSplicer.SpliceWithNewLine(Log,
                     $"    - 将 {nugetFixStrategy.NugetName} 设定为 {nugetFixStrategy.NugetVersion}");
-                firstPackageReference.RemoveAttributes();
+
+                foreach (var attribute in removeAttributeList)
+                {
+                    // 设置为 null 将删除属性
+                    firstPackageReference.SetAttributeValue(attribute, null);
+                }
+
                 firstPackageReference.SetAttributeValue(CsProj.IncludeAttribute, nugetFixStrategy.NugetName);
                 firstPackageReference.SetAttributeValue(CsProj.VersionAttribute, nugetFixStrategy.NugetVersion);
             }
